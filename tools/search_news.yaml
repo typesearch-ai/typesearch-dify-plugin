@@ -57,7 +57,7 @@ parameters:
       zh_Hans: "fast（默认）：标题和导语。ultra：仅标题。normal：还会阅读最相关的文章。deep：阅读更多，并用其他说法查找该主题。"
       ja_JP: "fast（既定）：見出しとリード文。ultra：見出しのみ。normal：最も関連する記事も読みます。deep：さらに多く読み、別の表現でもトピックを探します。"
       pt_BR: "fast (padrão): títulos e linhas finas. ultra: só títulos. normal: também lê as melhores correspondências. deep: lê mais e encontra o tema também em outras palavras."
-    llm_description: "fast (default, cheapest): headlines and standfirsts · ultra: headlines only · normal: also reads the best matches · deep: reads more, finds the topic in other words too."
+    llm_description: "fast (default): headlines and standfirsts · ultra (cheapest): headlines only · normal: also reads the best matches · deep: reads more, finds the topic in other words too."
   - name: max_results
     type: number
     required: false

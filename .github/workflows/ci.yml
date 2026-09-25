@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.2.0
       - run: uv sync --locked
       - run: uv run ruff check .
       - run: uv run ruff format --check .
@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.2.0
       - name: Download the Dify plugin CLI
         run: |
           curl -fsSL -o "$RUNNER_TEMP/dify" "https://github.com/langgenius/dify-plugin-daemon/releases/download/$DIFY_CLI_VERSION/dify-plugin-linux-amd64"
@@ -43,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: astral-sh/setup-uv@v10
+      - uses: astral-sh/setup-uv@v10.2.0
         with:
           python-version: '3.12'
       - name: Download the Dify plugin CLI
@@ -58,13 +58,20 @@ jobs:
           unzip -l "$RUNNER_TEMP/$name"
           echo "file=$RUNNER_TEMP/$name" >> "$GITHUB_OUTPUT"
           echo "name=$name" >> "$GITHUB_OUTPUT"
+      # The PR body for langgenius/dify-plugins (PR-dify-plugins.md) is checked too where it is present.
       - name: Marketplace checks (the validator the dify-plugins review runs)
         run: |
           git clone --depth 1 https://github.com/langgenius/dify-marketplace-toolkit.git "$RUNNER_TEMP/toolkit"
-          awk 'found { print } /^---$/ { found = 1 }' PR-dify-plugins.md > "$RUNNER_TEMP/pr-body.md"
+          pr_body=()
+          if [ -f PR-dify-plugins.md ]; then
+            awk 'found { print } /^---$/ { found = 1 }' PR-dify-plugins.md > "$RUNNER_TEMP/pr-body.md"
+            pr_body=(--pr-body-file "$RUNNER_TEMP/pr-body.md")
+          fi
           cd "$RUNNER_TEMP/toolkit"
-          python3 validator/validate-difypkg.py "${{ steps.build.outputs.file }}" --pr-body-file "$RUNNER_TEMP/pr-body.md" --offline --output-dir "$RUNNER_TEMP/report"
-          python3 validator/check-pr-body.py --pr-body-file "$RUNNER_TEMP/pr-body.md" --error-file "$RUNNER_TEMP/report/pr-body.errors.txt"
+          python3 validator/validate-difypkg.py "${{ steps.build.outputs.file }}" "${pr_body[@]}" --offline --output-dir "$RUNNER_TEMP/report"
+          if [ ${#pr_body[@]} -gt 0 ]; then
+            python3 validator/check-pr-body.py --pr-body-file "$RUNNER_TEMP/pr-body.md" --error-file "$RUNNER_TEMP/report/pr-body.errors.txt"
+          fi
       - name: The package installs and answers in the daemon's local runtime
         run: uv run --no-project python scripts/smoke.py "$RUNNER_TEMP/dify" "${{ steps.build.outputs.file }}"
       - uses: actions/upload-artifact@v7

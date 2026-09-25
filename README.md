@@ -22,8 +22,8 @@ agent cites the link.
 Every tool is read-only. Lists (domains, countries, languages, URLs) are text separated by commas or line
 breaks, so they work the same when the model fills them in and when you map a workflow variable.
 
-**Modes.** `fast` (default) judges headlines and standfirsts and is the cheapest; `ultra` judges headlines
-only; `normal` also reads the best matches; `deep` reads more and also finds the topic in other words. Use
+**Modes.** `fast` (default) judges headlines and standfirsts; `ultra` judges headlines only and is the
+cheapest; `normal` also reads the best matches; `deep` reads more and also finds the topic in other words. Use
 `fast` unless it finds too little.
 
 ## Setup
