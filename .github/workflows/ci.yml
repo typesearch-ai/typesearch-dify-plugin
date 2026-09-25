@@ -1,0 +1,74 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  # The Dify plugin CLI (langgenius/dify-plugin-daemon releases) that builds and runs the package.
+  DIFY_CLI_VERSION: '0.6.10'
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - name: Download the Dify plugin CLI
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/dify" "https://github.com/langgenius/dify-plugin-daemon/releases/download/$DIFY_CLI_VERSION/dify-plugin-linux-amd64"
+          chmod +x "$RUNNER_TEMP/dify"
+          "$RUNNER_TEMP/dify" version
+      # The tools and the credential check through dify_plugin, against a local fake API; with the CLI, the
+      # built .difypkg is checked too. No test reaches the real API.
+      - run: uv run --locked pytest
+        env:
+          DIFY_CLI: ${{ runner.temp }}/dify
+
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          python-version: '3.12'
+      - name: Download the Dify plugin CLI
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/dify" "https://github.com/langgenius/dify-plugin-daemon/releases/download/$DIFY_CLI_VERSION/dify-plugin-linux-amd64"
+          chmod +x "$RUNNER_TEMP/dify"
+      - name: Build the .difypkg
+        id: build
+        run: |
+          name="$(yq -r .name manifest.yaml)-$(yq -r .version manifest.yaml).difypkg"
+          "$RUNNER_TEMP/dify" plugin package . -o "$RUNNER_TEMP/$name"
+          unzip -l "$RUNNER_TEMP/$name"
+          echo "file=$RUNNER_TEMP/$name" >> "$GITHUB_OUTPUT"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+      - name: Marketplace checks (the validator the dify-plugins review runs)
+        run: |
+          git clone --depth 1 https://github.com/langgenius/dify-marketplace-toolkit.git "$RUNNER_TEMP/toolkit"
+          awk 'found { print } /^---$/ { found = 1 }' PR-dify-plugins.md > "$RUNNER_TEMP/pr-body.md"
+          cd "$RUNNER_TEMP/toolkit"
+          python3 validator/validate-difypkg.py "${{ steps.build.outputs.file }}" --pr-body-file "$RUNNER_TEMP/pr-body.md" --offline --output-dir "$RUNNER_TEMP/report"
+          python3 validator/check-pr-body.py --pr-body-file "$RUNNER_TEMP/pr-body.md" --error-file "$RUNNER_TEMP/report/pr-body.errors.txt"
+      - name: The package installs and answers in the daemon's local runtime
+        run: uv run --no-project python scripts/smoke.py "$RUNNER_TEMP/dify" "${{ steps.build.outputs.file }}"
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ steps.build.outputs.name }}
+          path: ${{ steps.build.outputs.file }}
+          if-no-files-found: error

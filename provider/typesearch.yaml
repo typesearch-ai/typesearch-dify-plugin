@@ -1,0 +1,46 @@
+identity:
+  author: typesearch
+  name: typesearch
+  label:
+    en_US: typesearch
+    zh_Hans: typesearch
+    ja_JP: typesearch
+    pt_BR: typesearch
+  description:
+    en_US: "News search for AI agents: recent news on any topic from outlets worldwide, each result with a calibrated relevance score, by country and language."
+    zh_Hans: "面向 AI 智能体的新闻搜索：从全球新闻媒体中检索任意主题的最新新闻，每条结果都带有经过校准的相关性评分，并可按国家和语言筛选。"
+    ja_JP: "AI エージェントのためのニュース検索。世界中のニュースメディアからあらゆるトピックの最新ニュースを検索し、各結果には較正済みの関連度スコアが付きます。国や言語で絞り込めます。"
+    pt_BR: "Busca de notícias para agentes de IA: notícias recentes sobre qualquer tema em veículos do mundo todo, cada resultado com uma pontuação de relevância calibrada, por país e idioma."
+  icon: icon.svg
+  icon_dark: icon-dark.svg
+  tags:
+    - search
+    - news
+credentials_for_provider:
+  typesearch_api_key:
+    type: secret-input
+    required: true
+    label:
+      en_US: API key
+      zh_Hans: API 密钥
+      ja_JP: API キー
+      pt_BR: Chave de API
+    placeholder:
+      en_US: ts_live_…
+      zh_Hans: ts_live_…
+      ja_JP: ts_live_…
+      pt_BR: ts_live_…
+    help:
+      en_US: Get your API key at app.typesearch.ai
+      zh_Hans: 在 app.typesearch.ai 获取 API 密钥
+      ja_JP: API キーは app.typesearch.ai で取得できます
+      pt_BR: Obtenha sua chave de API em app.typesearch.ai
+    url: https://app.typesearch.ai
+tools:
+  - tools/search_news.yaml
+  - tools/get_contents.yaml
+  - tools/find_similar.yaml
+  - tools/check_coverage.yaml
+extra:
+  python:
+    source: provider/typesearch.py

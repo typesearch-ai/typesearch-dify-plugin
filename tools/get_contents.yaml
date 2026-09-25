@@ -1,0 +1,49 @@
+identity:
+  name: get_contents
+  author: typesearch
+  label:
+    en_US: Get article contents
+    zh_Hans: 获取文章内容
+    ja_JP: 記事の内容を取得
+    pt_BR: Obter conteúdo de matérias
+description:
+  human:
+    en_US: "Get the title, standfirst, date, source and a short verbatim excerpt of up to 10 news article URLs. Never the full text."
+    zh_Hans: "获取最多 10 个新闻文章 URL 的标题、导语、日期、来源和一段简短的原文摘录。不提供全文。"
+    ja_JP: "最大 10 件のニュース記事 URL について、見出し、リード文、日付、ソース、短い原文の抜粋を取得します。全文は返しません。"
+    pt_BR: "Obtém título, linha fina, data, fonte e um trecho literal curto de até 10 URLs de matérias. Nunca o texto completo."
+  llm: "Get the title, standfirst, date, source and a short verbatim excerpt (up to 25 words) of up to 10 news article URLs. With a query, the excerpt is the one about it and relevance says how much the article covers it. Never returns the full text."
+parameters:
+  - name: urls
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: URLs
+      zh_Hans: URL
+      ja_JP: URL
+      pt_BR: URLs
+    human_description:
+      en_US: "Up to 10 article URLs, separated by commas or line breaks."
+      zh_Hans: "最多 10 个文章 URL，用逗号或换行分隔。"
+      ja_JP: "最大 10 件の記事 URL（カンマまたは改行区切り）。"
+      pt_BR: "Até 10 URLs de matérias, separadas por vírgula ou quebra de linha."
+    llm_description: "Up to 10 full article URLs, separated by commas or line breaks, such as \"https://example.com/news/article\"."
+  - name: query
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Query
+      zh_Hans: 查询
+      ja_JP: クエリ
+      pt_BR: Consulta
+    human_description:
+      en_US: "Optional: the excerpt is then the one about this query, with a relevance score."
+      zh_Hans: "可选：摘录将选取与该查询相关的部分，并给出相关性评分。"
+      ja_JP: "任意：指定すると、このクエリに関する抜粋と関連度スコアを返します。"
+      pt_BR: "Opcional: o trecho passa a ser o que trata desta consulta, com uma pontuação de relevância."
+    llm_description: "Optional: the excerpt is then the one about this query, with a relevance score."
+extra:
+  python:
+    source: tools/get_contents.py

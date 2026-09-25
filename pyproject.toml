@@ -1,0 +1,59 @@
+# Development only: this file and uv.lock stay out of the .difypkg (.difyignore), so Dify installs the
+# plugin from requirements.txt. Keep [project].dependencies and requirements.txt in sync (a test checks it).
+[project]
+name = "typesearch-dify-plugin"
+version = "0.1.0"
+description = "typesearch news search tools for Dify"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+  "dify_plugin>=0.10.2,<0.11",
+  "httpx>=0.28.1,<1",
+]
+
+[dependency-groups]
+dev = [
+  "pytest>=8,<10",
+  "jsonschema>=4.21,<5",
+  "ruff>=0.6,<1",
+  "mypy>=1.11,<2",
+  "types-PyYAML>=6,<7",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+addopts = "-ra"
+filterwarnings = [
+  # dify_plugin aplica gevent al importarse y trae un modelo con la config vieja de pydantic: no son nuestros.
+  "ignore::gevent.monkey.MonkeyPatchWarning",
+  "ignore::pydantic.warnings.PydanticDeprecatedSince20",
+]
+
+[tool.ruff]
+line-length = 140
+target-version = "py312"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["typesearch_plugin", "tools", "provider"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["typesearch_plugin", "tools", "provider", "main.py", "scripts"]
+explicit_package_bases = true
+
+# dify_plugin no trae tipos (py.typed): sus clases son Any para mypy.
+[[tool.mypy.overrides]]
+module = ["dify_plugin", "dify_plugin.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["tools.*", "provider.*"]
+disallow_subclassing_any = false

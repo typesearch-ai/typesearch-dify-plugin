@@ -1,0 +1,69 @@
+identity:
+  name: find_similar
+  author: typesearch
+  label:
+    en_US: Find similar news
+    zh_Hans: 查找相似新闻
+    ja_JP: 類似ニュースを検索
+    pt_BR: Encontrar notícias semelhantes
+description:
+  human:
+    en_US: "Find other news articles about the same story as a given article URL, across the index (the last 7 days by default)."
+    zh_Hans: "根据给定的文章 URL，在索引中查找报道同一事件的其他新闻文章（默认最近 7 天）。"
+    ja_JP: "指定した記事 URL と同じ出来事を扱う他のニュース記事をインデックスから探します（既定は直近 7 日間）。"
+    pt_BR: "Encontra outras matérias sobre a mesma história de uma URL, em todo o índice (por padrão, os últimos 7 dias)."
+  llm: "Find other news articles about the same story as a given article URL, across the index (the last 7 days by default). Useful to see how other outlets covered a story."
+parameters:
+  - name: url
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Article URL
+      zh_Hans: 文章 URL
+      ja_JP: 記事の URL
+      pt_BR: URL da matéria
+    human_description:
+      en_US: "The article URL whose story to find elsewhere."
+      zh_Hans: "要在其他来源中查找同一报道的文章 URL。"
+      ja_JP: "他の媒体で同じ出来事を探す元の記事 URL。"
+      pt_BR: "A URL da matéria cuja história buscar em outros veículos."
+    llm_description: "The article URL whose story to find elsewhere, such as \"https://example.com/news/article\"."
+  - name: max_results
+    type: number
+    required: false
+    default: 10
+    min: 1
+    max: 25
+    form: llm
+    label:
+      en_US: Max results
+      zh_Hans: 最大结果数
+      ja_JP: 最大件数
+      pt_BR: Máximo de resultados
+    human_description:
+      en_US: "How many results, 1 to 25. Defaults to 10."
+      zh_Hans: "返回的结果数量，1 到 25，默认 10。"
+      ja_JP: "結果の件数（1〜25、既定は 10）。"
+      pt_BR: "Quantos resultados, de 1 a 25. Padrão: 10."
+    llm_description: "How many results, 1 to 25. Defaults to 10."
+  - name: days
+    type: number
+    required: false
+    min: 1
+    max: 365
+    form: llm
+    label:
+      en_US: Days
+      zh_Hans: 天数
+      ja_JP: 日数
+      pt_BR: Dias
+    human_description:
+      en_US: "Only the last N days, 1 to 365. Defaults to 7."
+      zh_Hans: "仅限最近 N 天，1 到 365，默认 7 天。"
+      ja_JP: "直近 N 日間のみ（1〜365、既定は 7）。"
+      pt_BR: "Só os últimos N dias, de 1 a 365. Padrão: 7."
+    llm_description: "Only the last N days, 1 to 365. Defaults to 7."
+extra:
+  python:
+    source: tools/find_similar.py

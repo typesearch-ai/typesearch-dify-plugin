@@ -1,0 +1,42 @@
+# What stays out of the .difypkg: only the files the plugin needs at runtime go in.
+# (The Marketplace review rejects caches, virtualenvs, .env files and development files.)
+
+# Development and tests
+tests/
+scripts/
+.github/
+pyproject.toml
+uv.lock
+.env.example
+CHANGELOG.md
+PUBLICAR.md
+PR-dify-plugins.md
+.gitignore
+.difyignore
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# Secrets and local files
+.env
+.env.*
+*.log
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Packages
+*.difypkg

@@ -1,0 +1,43 @@
+version: 0.1.0
+type: plugin
+author: typesearch
+name: typesearch
+repo: https://github.com/typesearch-ai/typesearch-dify-plugin
+contact: support@typesearch.ai
+label:
+  en_US: typesearch
+  zh_Hans: typesearch
+  ja_JP: typesearch
+  pt_BR: typesearch
+description:
+  en_US: "News search for AI agents: recent news on any topic from outlets worldwide, each result with a calibrated relevance score, by country and language."
+  zh_Hans: "面向 AI 智能体的新闻搜索：从全球新闻媒体中检索任意主题的最新新闻，每条结果都带有经过校准的相关性评分，并可按国家和语言筛选。"
+  ja_JP: "AI エージェントのためのニュース検索。世界中のニュースメディアからあらゆるトピックの最新ニュースを検索し、各結果には較正済みの関連度スコアが付きます。国や言語で絞り込めます。"
+  pt_BR: "Busca de notícias para agentes de IA: notícias recentes sobre qualquer tema em veículos do mundo todo, cada resultado com uma pontuação de relevância calibrada, por país e idioma."
+icon: icon.svg
+icon_dark: icon-dark.svg
+tags:
+  - search
+  - news
+resource:
+  memory: 268435456
+  permission: {}
+plugins:
+  tools:
+    - provider/typesearch.yaml
+meta:
+  version: 0.0.1
+  arch:
+    - amd64
+    - arm64
+  runner:
+    language: python
+    version: "3.12"
+    entrypoint: main
+  minimum_dify_version: 1.14.2
+created_at: 2026-09-25T16:44:20Z
+privacy: PRIVACY.md
+# The only host the plugin connects to (checked by the Marketplace review's access-domain scan).
+network:
+  domains:
+    - api.typesearch.ai

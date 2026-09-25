@@ -1,0 +1,188 @@
+identity:
+  name: search_news
+  author: typesearch
+  label:
+    en_US: Search news
+    zh_Hans: 搜索新闻
+    ja_JP: ニュース検索
+    pt_BR: Buscar notícias
+description:
+  human:
+    en_US: "Search recent news on any topic across news outlets worldwide. Each result has a relevance score, source, date, country and language, and short excerpts in the modes that read."
+    zh_Hans: "在全球新闻媒体中搜索任意主题的最新新闻。每条结果包含相关性评分、来源、日期、国家和语言，阅读型模式还会提供简短摘录。"
+    ja_JP: "世界中のニュースメディアから、あらゆるトピックの最新ニュースを検索します。各結果には関連度スコア、ソース、日付、国と言語が含まれ、記事を読むモードでは短い抜粋も付きます。"
+    pt_BR: "Busca notícias recentes sobre qualquer tema em veículos do mundo todo. Cada resultado traz pontuação de relevância, fonte, data, país e idioma, e trechos curtos nos modos que leem as matérias."
+  llm: "Search recent news on any topic across a curated index of news outlets worldwide, judged by a relevance model. Returns the matching articles: title, link, source, date, country and language, standfirst, and short excerpts in the modes that read. Use it for current events and for what outlets reported about a company, person, place or topic. Defaults: mode \"fast\" and the last 7 days. Results are short excerpts, never full articles: cite the link."
+parameters:
+  - name: query
+    type: string
+    required: true
+    form: llm
+    label:
+      en_US: Query
+      zh_Hans: 查询
+      ja_JP: 検索クエリ
+      pt_BR: Consulta
+    human_description:
+      en_US: "What to look for, in any language: a topic, event, person, company or place."
+      zh_Hans: "要搜索的内容，可使用任何语言：主题、事件、人物、公司或地点。"
+      ja_JP: "検索する内容（任意の言語）。トピック、出来事、人物、企業、場所など。"
+      pt_BR: "O que buscar, em qualquer idioma: um tema, evento, pessoa, empresa ou lugar."
+    llm_description: "What to look for, in any language: a topic, event, person, company or place, such as \"inflation in Argentina\" or \"OpenAI funding\". 2 to 200 characters."
+  - name: mode
+    type: select
+    required: false
+    default: fast
+    form: llm
+    options:
+      - value: ultra
+        label:
+          en_US: ultra
+      - value: fast
+        label:
+          en_US: fast
+      - value: normal
+        label:
+          en_US: normal
+      - value: deep
+        label:
+          en_US: deep
+    label:
+      en_US: Mode
+      zh_Hans: 模式
+      ja_JP: モード
+      pt_BR: Modo
+    human_description:
+      en_US: "fast (default): headlines and standfirsts. ultra: headlines only. normal: also reads the best matches. deep: reads more and finds the topic in other words too."
+      zh_Hans: "fast（默认）：标题和导语。ultra：仅标题。normal：还会阅读最相关的文章。deep：阅读更多，并用其他说法查找该主题。"
+      ja_JP: "fast（既定）：見出しとリード文。ultra：見出しのみ。normal：最も関連する記事も読みます。deep：さらに多く読み、別の表現でもトピックを探します。"
+      pt_BR: "fast (padrão): títulos e linhas finas. ultra: só títulos. normal: também lê as melhores correspondências. deep: lê mais e encontra o tema também em outras palavras."
+    llm_description: "fast (default, cheapest): headlines and standfirsts · ultra: headlines only · normal: also reads the best matches · deep: reads more, finds the topic in other words too."
+  - name: max_results
+    type: number
+    required: false
+    default: 10
+    min: 1
+    max: 25
+    form: llm
+    label:
+      en_US: Max results
+      zh_Hans: 最大结果数
+      ja_JP: 最大件数
+      pt_BR: Máximo de resultados
+    human_description:
+      en_US: "How many results, 1 to 25. Defaults to 10."
+      zh_Hans: "返回的结果数量，1 到 25，默认 10。"
+      ja_JP: "結果の件数（1〜25、既定は 10）。"
+      pt_BR: "Quantos resultados, de 1 a 25. Padrão: 10."
+    llm_description: "How many results, 1 to 25. Defaults to 10."
+  - name: days
+    type: number
+    required: false
+    min: 1
+    max: 365
+    form: llm
+    label:
+      en_US: Days
+      zh_Hans: 天数
+      ja_JP: 日数
+      pt_BR: Dias
+    human_description:
+      en_US: "Only the last N days, 1 to 365. Defaults to 7 unless a date range is given."
+      zh_Hans: "仅限最近 N 天，1 到 365。未指定日期范围时默认 7 天。"
+      ja_JP: "直近 N 日間のみ（1〜365）。日付範囲を指定しない場合は 7 日。"
+      pt_BR: "Só os últimos N dias, de 1 a 365. Padrão: 7, salvo se houver um intervalo de datas."
+    llm_description: "Only the last N days, 1 to 365. Defaults to 7 unless published_after or published_before are given."
+  - name: published_after
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Published after
+      zh_Hans: 发布时间晚于
+      ja_JP: 公開日（以降）
+      pt_BR: Publicado depois de
+    human_description:
+      en_US: "Published on or after this date: 2026-09-25, or a date-time with its offset."
+      zh_Hans: "在此日期当天或之后发布：2026-09-25，或带时区偏移的日期时间。"
+      ja_JP: "この日付以降に公開：2026-09-25、またはタイムゾーン付きの日時。"
+      pt_BR: "Publicado nesta data ou depois: 2026-09-25, ou data e hora com fuso."
+    llm_description: "Published on or after this date: 2026-09-25, or a date-time with offset such as 2026-09-25T14:00:00Z."
+  - name: published_before
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Published before
+      zh_Hans: 发布时间早于
+      ja_JP: 公開日（以前）
+      pt_BR: Publicado antes de
+    human_description:
+      en_US: "Published on or before this date; a bare date includes that whole day."
+      zh_Hans: "在此日期当天或之前发布；只写日期时包含当天全天。"
+      ja_JP: "この日付以前に公開。日付のみの場合はその日全体を含みます。"
+      pt_BR: "Publicado nesta data ou antes; uma data sem hora inclui o dia inteiro."
+    llm_description: "Published on or before this date; a bare date includes that whole day. Same formats as published_after."
+  - name: include_domains
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Include domains
+      zh_Hans: 仅包含域名
+      ja_JP: 対象ドメイン
+      pt_BR: Incluir domínios
+    human_description:
+      en_US: "Only these domains or paths, comma-separated, such as example.com or example.com/sports. Up to 20."
+      zh_Hans: "仅限这些域名或路径，用逗号分隔，例如 example.com 或 example.com/sports。最多 20 个。"
+      ja_JP: "これらのドメインまたはパスのみ（カンマ区切り）。例：example.com、example.com/sports。最大 20 件。"
+      pt_BR: "Só estes domínios ou caminhos, separados por vírgula, como example.com ou example.com/sports. Até 20."
+    llm_description: "Only these domains or paths, comma-separated, such as \"example.com, example.org/sports\". Up to 20."
+  - name: exclude_domains
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Exclude domains
+      zh_Hans: 排除域名
+      ja_JP: 除外ドメイン
+      pt_BR: Excluir domínios
+    human_description:
+      en_US: "Never these domains or paths, comma-separated. Up to 20."
+      zh_Hans: "排除这些域名或路径，用逗号分隔。最多 20 个。"
+      ja_JP: "これらのドメインまたはパスを除外（カンマ区切り）。最大 20 件。"
+      pt_BR: "Nunca estes domínios ou caminhos, separados por vírgula. Até 20."
+    llm_description: "Never these domains or paths, comma-separated, such as \"example.com\". Up to 20."
+  - name: countries
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Countries
+      zh_Hans: 国家
+      ja_JP: 国
+      pt_BR: Países
+    human_description:
+      en_US: "Only sources from these countries: ISO 3166-1 alpha-2 codes, comma-separated, such as AR or US, GB."
+      zh_Hans: "仅限来自这些国家的来源：ISO 3166-1 alpha-2 代码，用逗号分隔，例如 AR 或 US, GB。"
+      ja_JP: "これらの国のソースのみ：ISO 3166-1 alpha-2 コード（カンマ区切り）。例：AR、US, GB。"
+      pt_BR: "Só fontes destes países: códigos ISO 3166-1 alfa-2, separados por vírgula, como AR ou US, GB."
+    llm_description: "Only sources from these countries: ISO 3166-1 alpha-2 codes, comma-separated, such as \"AR\" or \"US, GB\"."
+  - name: languages
+    type: string
+    required: false
+    form: llm
+    label:
+      en_US: Languages
+      zh_Hans: 语言
+      ja_JP: 言語
+      pt_BR: Idiomas
+    human_description:
+      en_US: "Only sources that publish in these languages: ISO 639-1 codes, comma-separated, such as es or en, pt."
+      zh_Hans: "仅限以这些语言发布的来源：ISO 639-1 代码，用逗号分隔，例如 es 或 en, pt。"
+      ja_JP: "これらの言語で発行するソースのみ：ISO 639-1 コード（カンマ区切り）。例：es、en, pt。"
+      pt_BR: "Só fontes que publicam nestes idiomas: códigos ISO 639-1, separados por vírgula, como es ou en, pt."
+    llm_description: "Only sources that publish in these languages: ISO 639-1 codes, comma-separated, such as \"es\" or \"en, pt\"."
+extra:
+  python:
+    source: tools/search_news.py

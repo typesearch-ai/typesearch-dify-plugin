@@ -1,0 +1,39 @@
+# Attaches the .difypkg to a GitHub release (tag v<version>), ready for the PR to langgenius/dify-plugins
+# (see PUBLICAR.md). It publishes nothing to the Marketplace by itself.
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write # to upload the package to the release
+
+env:
+  DIFY_CLI_VERSION: '0.6.10'
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+      - name: The tag matches the version
+        run: test "v$(yq -r .version manifest.yaml)" = "$GITHUB_REF_NAME"
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run mypy
+      - name: Download the Dify plugin CLI
+        run: |
+          curl -fsSL -o "$RUNNER_TEMP/dify" "https://github.com/langgenius/dify-plugin-daemon/releases/download/$DIFY_CLI_VERSION/dify-plugin-linux-amd64"
+          chmod +x "$RUNNER_TEMP/dify"
+      - run: uv run pytest
+        env:
+          DIFY_CLI: ${{ runner.temp }}/dify
+      - name: Build and attach the .difypkg
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          name="$(yq -r .name manifest.yaml)-$(yq -r .version manifest.yaml).difypkg"
+          "$RUNNER_TEMP/dify" plugin package . -o "$name"
+          gh release upload "$GITHUB_REF_NAME" "$name" --clobber
