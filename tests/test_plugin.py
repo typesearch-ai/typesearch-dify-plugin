@@ -175,6 +175,7 @@ def test_readme_and_privacy_are_ready_for_review() -> None:
 def test_the_package_leaves_out_development_files() -> None:
     ignore = (ROOT / ".difyignore").read_text(encoding="utf-8").splitlines()
     for entry in (
+        ".git",
         "tests/",
         "scripts/",
         ".github/",

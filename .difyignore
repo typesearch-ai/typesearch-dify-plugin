@@ -1,7 +1,8 @@
 # What stays out of the .difypkg: only the files the plugin needs at runtime go in.
 # (The Marketplace review rejects caches, virtualenvs, .env files and development files.)
 
-# Development and tests
+# Development and tests (.git: in its own repository the plugin folder is the repository root)
+.git
 tests/
 scripts/
 .github/
