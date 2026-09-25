@@ -33,6 +33,8 @@ CONTRACT = {
     "find_similar": ["url", "max_results", "days"],
     "check_coverage": ["domain"],
 }
+# Los que fija quien arma la app (form: form), además de los del MCP: el modelo no los ve.
+DEVELOPER = {"find_similar": ["countries", "languages"]}
 REQUIRED = {"search_news": ["query"], "get_contents": ["urls"], "find_similar": ["url"], "check_coverage": []}
 # Lo que el paquete publica (lo que no ignora .difyignore): el texto que ven usuarios y revisores.
 PUBLIC = ["README.md", "PRIVACY.md", "manifest.yaml", "provider/typesearch.yaml", *[f"tools/{t}.yaml" for t in CONTRACT]]
@@ -82,9 +84,12 @@ def test_dify_plugin_loads_the_manifest_the_provider_and_the_four_tools(registra
 def test_the_same_parameters_as_the_mcp(registration: PluginRegistration) -> None:
     _, _, tools = registration.tools_mapping["typesearch"]
     for name, (config, _cls) in tools.items():
-        assert [p.name for p in config.parameters] == CONTRACT[name]
+        assert [p.name for p in config.parameters] == CONTRACT[name] + DEVELOPER.get(name, [])
         assert [p.name for p in config.parameters if p.required] == REQUIRED[name]
         for p in config.parameters:
+            if p.name in DEVELOPER.get(name, []):
+                assert p.form == ToolParameter.ToolParameterForm.FORM, (name, p.name)  # los fija quien arma la app
+                continue
             assert p.form == ToolParameter.ToolParameterForm.LLM, (name, p.name)  # el modelo los completa
             assert p.llm_description and len(p.llm_description) > 20, (name, p.name)
         assert len(config.description.llm) > 80

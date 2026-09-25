@@ -16,7 +16,7 @@ agent cites the link.
 | --- | --- |
 | **Search news** (`search_news`) | News on a topic, with a relevance score per article. Parameters: `query` (required), `mode` (`ultra`, `fast`, `normal` or `deep`; `fast` by default), `max_results` (1 to 25, 10 by default), `days` (the last N days, 7 by default), `published_after`, `published_before`, `include_domains`, `exclude_domains`, `countries` (ISO 3166-1 alpha-2 codes, such as `AR, US`), `languages` (ISO 639-1 codes, such as `es, en`). |
 | **Get article contents** (`get_contents`) | Title, standfirst, date, source and a short verbatim excerpt (up to 25 words) of up to 10 article URLs. With `query`, the excerpt is the one about it, with a relevance score. Never the full text. |
-| **Find similar news** (`find_similar`) | Other coverage of the story in an article URL: `url` (required), `max_results`, `days`. |
+| **Find similar news** (`find_similar`) | Other coverage of the story in an article URL: `url` (required), `max_results`, `days`; and, set by you in the tool settings (the model never sees them), `countries` and `languages`. |
 | **Check index coverage** (`check_coverage`) | Whether a news domain is covered (`domain`), or how many sources the index has per country and language. Free. |
 
 Every tool is read-only. Lists (domains, countries, languages, URLs) are text separated by commas or line

@@ -64,6 +64,35 @@ parameters:
       ja_JP: "直近 N 日間のみ（1〜365、既定は 7）。"
       pt_BR: "Só os últimos N dias, de 1 a 365. Padrão: 7."
     llm_description: "Only the last N days, 1 to 365. Defaults to 7."
+  # Los fija quien arma la app, no el modelo: en el MCP find_similar no los tiene.
+  - name: countries
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Countries
+      zh_Hans: 国家
+      ja_JP: 国
+      pt_BR: Países
+    human_description:
+      en_US: "Only coverage from sources in these countries: ISO 3166-1 alpha-2 codes, comma-separated, such as AR or US, GB."
+      zh_Hans: "仅限来自这些国家的来源的报道：ISO 3166-1 alpha-2 代码，用逗号分隔，例如 AR 或 US, GB。"
+      ja_JP: "これらの国のソースの記事のみ：ISO 3166-1 alpha-2 コード（カンマ区切り）。例：AR、US, GB。"
+      pt_BR: "Só matérias de fontes destes países: códigos ISO 3166-1 alfa-2, separados por vírgula, como AR ou US, GB."
+  - name: languages
+    type: string
+    required: false
+    form: form
+    label:
+      en_US: Languages
+      zh_Hans: 语言
+      ja_JP: 言語
+      pt_BR: Idiomas
+    human_description:
+      en_US: "Only coverage from sources that publish in these languages: ISO 639-1 codes, comma-separated, such as es or en, pt."
+      zh_Hans: "仅限以这些语言发布的来源的报道：ISO 639-1 代码，用逗号分隔，例如 es 或 en, pt。"
+      ja_JP: "これらの言語で発行するソースの記事のみ：ISO 639-1 コード（カンマ区切り）。例：es、en, pt。"
+      pt_BR: "Só matérias de fontes que publicam nestes idiomas: códigos ISO 639-1, separados por vírgula, como es ou en, pt."
 extra:
   python:
     source: tools/find_similar.py

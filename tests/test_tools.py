@@ -211,6 +211,17 @@ def test_similar_uses_mode_fast_and_shows_the_reference(registration: PluginRegi
     assert data["reference"] == {"title": "Inflación: qué esperan los analistas", "url": "https://diarioejemplo.example/a"}
 
 
+def test_similar_with_the_countries_and_languages_of_the_app(registration: PluginRegistration, api: FakeApi) -> None:
+    call(registration, "find_similar", {"url": "https://diarioejemplo.example/a", "countries": "AR, UY", "languages": "es"})
+    assert api.last.body == {
+        "url": "https://diarioejemplo.example/a",
+        "mode": "fast",
+        "max_results": 10,
+        "countries": ["AR", "UY"],
+        "languages": ["es"],
+    }
+
+
 def test_similar_with_nothing_found(registration: PluginRegistration, api: FakeApi) -> None:
     api.next(
         Scripted(

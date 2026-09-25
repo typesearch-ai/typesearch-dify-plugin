@@ -211,9 +211,13 @@ def similar_body(p: Mapping[str, Any]) -> dict[str, Any]:
         "mode": "fast",
         "max_results": _whole(p.get("max_results"), "max_results", 1, 25, DEFAULT_MAX_RESULTS),
     }
-    days = _whole(p.get("days"), "days", 1, 365)
-    if days is not None:
-        body["days"] = days
+    optional = {
+        "days": _whole(p.get("days"), "days", 1, 365),
+        # Los fija quien arma la app (form: form), no el modelo.
+        "countries": _list(p.get("countries"), "countries", what="codes", max_items=50, max_len=20),
+        "languages": _list(p.get("languages"), "languages", what="codes", max_items=20, max_len=35),
+    }
+    body.update({k: v for k, v in optional.items() if v is not None})
     return body
 
 
