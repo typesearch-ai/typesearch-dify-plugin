@@ -210,7 +210,9 @@ def test_public_text_has_no_prices_and_only_example_outlets() -> None:
 
 def test_public_text_offers_no_index_coverage() -> None:
     """La cobertura del índice no es pública: ni /v1/sources, ni check_coverage, ni cuántos medios o notas hay."""
-    for path in [*PUBLIC, "CHANGELOG.md", "PR-dify-plugins.md"]:
+    # PR-dify-plugins.md es una nota interna: el repo público no la tiene (scripts/sincronizar-publicos.sh).
+    notas = [p for p in ["PR-dify-plugins.md"] if (ROOT / p).exists()]
+    for path in [*PUBLIC, "CHANGELOG.md", *notas]:
         text = (ROOT / path).read_text(encoding="utf-8")
         assert not re.search(r"/v1/sources|check.?coverage|index coverage", text, re.IGNORECASE), path
         assert not re.search(r"\d[\d,.]*\+?\s+(sources|outlets|articles indexed)", text, re.IGNORECASE), path
