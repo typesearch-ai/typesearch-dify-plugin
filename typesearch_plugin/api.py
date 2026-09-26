@@ -1,4 +1,4 @@
-"""El cliente HTTP de la API de typesearch, lo justo para las cuatro herramientas.
+"""El cliente HTTP de la API de typesearch, lo justo para las tres herramientas y la validación de la clave.
 
 HTTP directo con httpx en lugar del SDK ``typesearch``: el SDK todavía no está en PyPI, y un plugin que
 dependa de él no se instalaría hasta que se publique. httpx ya viene con dify_plugin, así que el plugin
@@ -130,15 +130,13 @@ class Client:
     def contents(self, body: Mapping[str, Any]) -> dict[str, Any]:
         return self._request("POST", "/v1/contents", json=body)
 
-    def sources(self, domain: str | None = None) -> dict[str, Any]:
-        """Gratis: la cobertura del índice, o si un dominio está cubierto. Sirve también para validar la clave."""
-        return self._request("GET", "/v1/sources", params={"domain": domain} if domain else None)
+    def usage(self) -> dict[str, Any]:
+        """Gratis: el uso y los límites de la clave. Sirve para validarla al guardarla en Dify."""
+        return self._request("GET", "/v1/usage")
 
     # --- El pedido, con reintentos --------------------------------------------------------------
 
-    def _request(
-        self, method: str, path: str, *, json: Mapping[str, Any] | None = None, params: Mapping[str, str] | None = None
-    ) -> dict[str, Any]:
+    def _request(self, method: str, path: str, *, json: Mapping[str, Any] | None = None) -> dict[str, Any]:
         start = time.monotonic()
         attempt = 0
         while True:
@@ -149,7 +147,6 @@ class Client:
                     method,
                     f"{self._base_url}{path}",
                     json=json,
-                    params=params,
                     timeout=httpx.Timeout(max(1.0, min(self._timeout, left)), connect=min(10.0, self._timeout)),
                 )
             except (httpx.ConnectError, httpx.ConnectTimeout):

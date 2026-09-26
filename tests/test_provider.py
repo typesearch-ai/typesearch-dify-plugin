@@ -1,4 +1,4 @@
-"""La validación de la clave al configurar el plugin en Dify: GET /v1/sources, que no cobra."""
+"""La validación de la clave al configurar el plugin en Dify: GET /v1/usage, que no cobra."""
 
 from __future__ import annotations
 
@@ -17,7 +17,7 @@ def provider(registration: PluginRegistration) -> object:
 
 def test_a_valid_key_is_checked_with_a_free_call(registration: PluginRegistration, api: FakeApi) -> None:
     provider(registration).validate_credentials({"typesearch_api_key": f"  {KEY}  "})  # type: ignore[attr-defined]
-    assert [(r.method, r.path, r.query) for r in api.requests] == [("GET", "/v1/sources", {})]
+    assert [(r.method, r.path, r.query) for r in api.requests] == [("GET", "/v1/usage", {})]
     assert api.last.headers["authorization"] == f"Bearer {KEY}"
 
 

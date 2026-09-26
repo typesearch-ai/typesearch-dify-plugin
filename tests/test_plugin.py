@@ -31,11 +31,10 @@ CONTRACT = {
     ],
     "get_contents": ["urls", "query"],
     "find_similar": ["url", "max_results", "days"],
-    "check_coverage": ["domain"],
 }
 # Los que fija quien arma la app (form: form), además de los del MCP: el modelo no los ve.
 DEVELOPER = {"find_similar": ["countries", "languages"]}
-REQUIRED = {"search_news": ["query"], "get_contents": ["urls"], "find_similar": ["url"], "check_coverage": []}
+REQUIRED = {"search_news": ["query"], "get_contents": ["urls"], "find_similar": ["url"]}
 # Lo que el paquete publica (lo que no ignora .difyignore): el texto que ven usuarios y revisores.
 PUBLIC = ["README.md", "PRIVACY.md", "manifest.yaml", "provider/typesearch.yaml", *[f"tools/{t}.yaml" for t in CONTRACT]]
 
@@ -66,7 +65,7 @@ def i18n_objects(node: Any, path: str = "") -> list[tuple[str, dict[str, str]]]:
 # --- Dify lo carga ---------------------------------------------------------------------------------
 
 
-def test_dify_plugin_loads_the_manifest_the_provider_and_the_four_tools(registration: PluginRegistration) -> None:
+def test_dify_plugin_loads_the_manifest_the_provider_and_the_three_tools(registration: PluginRegistration) -> None:
     assert registration.configuration.name == "typesearch"
     assert registration.configuration.author == "typesearch"
     assert registration.configuration.version == VERSION
@@ -207,3 +206,11 @@ def test_public_text_has_no_prices_and_only_example_outlets() -> None:
         assert not re.search(r"(US)?\$\s?\d", text), path
         for found in host.findall(text):
             assert found.lower().endswith(allowed), (path, found)
+
+
+def test_public_text_offers_no_index_coverage() -> None:
+    """La cobertura del índice no es pública: ni /v1/sources, ni check_coverage, ni cuántos medios o notas hay."""
+    for path in [*PUBLIC, "CHANGELOG.md", "PR-dify-plugins.md"]:
+        text = (ROOT / path).read_text(encoding="utf-8")
+        assert not re.search(r"/v1/sources|check.?coverage|index coverage", text, re.IGNORECASE), path
+        assert not re.search(r"\d[\d,.]*\+?\s+(sources|outlets|articles indexed)", text, re.IGNORECASE), path

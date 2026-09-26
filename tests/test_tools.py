@@ -159,7 +159,7 @@ def test_search_nothing_found_near_misses_incomplete_and_cached(registration: Pl
     assert data["near_misses"][0]["url"] == "https://diarioejemplo.example/economia/nota-1"
 
 
-# --- get_contents, find_similar, check_coverage --------------------------------------------------
+# --- get_contents, find_similar ---------------------------------------------------------------------
 
 
 def test_contents_each_url_with_its_status(registration: PluginRegistration, api: FakeApi) -> None:
@@ -245,26 +245,6 @@ def test_similar_needs_a_url(registration: PluginRegistration, api: FakeApi) -> 
     assert api.requests == []
 
 
-def test_coverage_one_domain_or_the_aggregate(registration: PluginRegistration, api: FakeApi) -> None:
-    yes = call(registration, "check_coverage", {"domain": "diarioejemplo.example"})
-    assert api.last.method == "GET" and api.last.query == {"domain": ["diarioejemplo.example"]}
-    assert (
-        texts(yes)[0] == "diarioejemplo.example is covered (Diario Ejemplo): AR · es · 1,520 articles · last refreshed 2026-09-22T14:05Z."
-    )
-
-    no = call(registration, "check_coverage", {"domain": "otro.example"})
-    assert texts(no)[0] == "otro.example is not covered by the index."
-    assert jsons(no)[0] == {"domain": "otro.example", "covered": False}
-
-    everything = call(registration, "check_coverage", {"domain": ""})
-    assert api.last.query == {}
-    text = texts(everything)[0]
-    assert "The index has 1,234 sources and 567,890 articles." in text
-    assert "Sources by country: AR 120, international 4." in text
-    assert "Sources by language: es 900, en 334." in text
-    assert jsons(everything)[0]["by_language"] == [{"language": "es", "sources": 900}, {"language": "en", "sources": 334}]
-
-
 # --- Errores -------------------------------------------------------------------------------------
 
 
@@ -313,7 +293,7 @@ def test_server_errors_are_retried_once(registration: PluginRegistration, api: F
 
     api.reset()
     api.next(Scripted(502, raw="<html>Bad gateway</html>"), Scripted(502, raw="<html>Bad gateway</html>"))
-    assert only_text(call(registration, "check_coverage", {})) == (
+    assert only_text(call(registration, "find_similar", {"url": "https://diarioejemplo.example/a"})) == (
         "Error (http_502): the typesearch API failed (status 502). Try again in a moment. [request req_fakescr1]"
     )
     assert len(api.requests) == 2
@@ -337,7 +317,7 @@ def test_network_failures_are_plain_sentences(registration: PluginRegistration, 
 
     api.next(Scripted(destroy=True))
     assert (
-        only_text(call(registration, "check_coverage", {}))
+        only_text(call(registration, "find_similar", {"url": "https://diarioejemplo.example/a"}))
         == "Error (connection): the connection to the typesearch API was interrupted. Try again."
     )
 
@@ -348,6 +328,6 @@ def test_network_failures_are_plain_sentences(registration: PluginRegistration, 
     )
 
     monkeypatch.setattr(api_module, "BASE_URL", "http://127.0.0.1:9")
-    assert only_text(call(registration, "check_coverage", {})) == (
+    assert only_text(call(registration, "find_similar", {"url": "https://diarioejemplo.example/a"})) == (
         "Error (connection): could not reach the typesearch API. Check the network connection and try again."
     )

@@ -7,8 +7,8 @@ All notable changes to the typesearch plugin for Dify are documented here. The f
 
 First release.
 
-- Four read-only tools with the same parameters and output as the typesearch MCP server: `search_news`,
-  `get_contents`, `find_similar` and `check_coverage`.
+- Three read-only tools with the same parameters and output as the typesearch MCP server: `search_news`,
+  `get_contents` and `find_similar`.
 - `find_similar` also takes `countries` and `languages`, set in the tool settings, never by the model.
 - Compact output for agents: readable text plus the same data as JSON, without empty fields.
 - Errors the model can act on (`Error (code): message`), without the API key; invalid parameters are

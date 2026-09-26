@@ -31,7 +31,7 @@ EXPECTED = {
     "provider/typesearch.py",
     "provider/typesearch.yaml",
     "requirements.txt",
-    *(f"tools/{name}.{ext}" for name in ("search_news", "get_contents", "find_similar", "check_coverage") for ext in ("py", "yaml")),
+    *(f"tools/{name}.{ext}" for name in ("search_news", "get_contents", "find_similar") for ext in ("py", "yaml")),
     *(f"typesearch_plugin/{name}.py" for name in ("__init__", "api", "output", "params", "run")),
 }
 

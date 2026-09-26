@@ -17,10 +17,13 @@ agent cites the link.
 | **Search news** (`search_news`) | News on a topic, with a relevance score per article. Parameters: `query` (required), `mode` (`ultra`, `fast`, `normal` or `deep`; `fast` by default), `max_results` (1 to 25, 10 by default), `days` (the last N days, 7 by default), `published_after`, `published_before`, `include_domains`, `exclude_domains`, `countries` (ISO 3166-1 alpha-2 codes, such as `AR, US`), `languages` (ISO 639-1 codes, such as `es, en`). |
 | **Get article contents** (`get_contents`) | Title, standfirst, date, source and a short verbatim excerpt (up to 25 words) of up to 10 article URLs. With `query`, the excerpt is the one about it, with a relevance score. Never the full text. |
 | **Find similar news** (`find_similar`) | Other coverage of the story in an article URL: `url` (required), `max_results`, `days`; and, set by you in the tool settings (the model never sees them), `countries` and `languages`. |
-| **Check index coverage** (`check_coverage`) | Whether a news domain is covered (`domain`), or how many sources the index has per country and language. Free. |
 
 Every tool is read-only. Lists (domains, countries, languages, URLs) are text separated by commas or line
 breaks, so they work the same when the model fills them in and when you map a workflow variable.
+
+The index covers news from 130+ countries in 30+ languages, and every result carries its source and link.
+Missing an outlet? Suggest it from the [dashboard](https://app.typesearch.ai) (**Suggest a source**) or write
+to support@typesearch.ai.
 
 **Modes.** `fast` (default) judges headlines and standfirsts; `ultra` judges headlines only and is the
 cheapest; `normal` also reads the best matches; `deep` reads more and also finds the topic in other words. Use
@@ -41,8 +44,8 @@ Requires Dify 1.14.2 or later (Cloud, Community or Enterprise).
 ### In an Agent app or an Agent node
 
 Add the typesearch tools in the app's **Tools** section. The model reads each tool's description and picks
-one: *Search news* for current events, *Get article contents* to read a link, *Find similar news* for
-other coverage of a story, and *Check index coverage* to see what is indexed. For example:
+one: *Search news* for current events, *Get article contents* to read a link, and *Find similar news* for
+other coverage of a story. For example:
 
 > What did outlets in Argentina report this week about inflation? Answer in English and cite the links.
 
@@ -91,8 +94,8 @@ The API key never appears in a message. Failed calls are free.
 ## API key and billing
 
 Every call uses the credit of the typesearch account that owns the API key, like the REST API: see
-[typesearch.ai/pricing](https://typesearch.ai/pricing). *Check index coverage* and the key check are
-free, and so are cached results and failed calls. You can see each request, its cost and your balance in
+[typesearch.ai/pricing](https://typesearch.ai/pricing). The key check is free, and so are cached results
+and failed calls. You can see each request, its cost and your balance in
 the [dashboard](https://app.typesearch.ai).
 
 ## Connection requirements

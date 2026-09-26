@@ -40,7 +40,6 @@ tools:
   - tools/search_news.yaml
   - tools/get_contents.yaml
   - tools/find_similar.yaml
-  - tools/check_coverage.yaml
 extra:
   python:
     source: provider/typesearch.py

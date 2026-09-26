@@ -21,10 +21,15 @@ from typing import Any
 
 REQUESTS: list[dict[str, Any]] = [
     {
-        "invoke_id": "coverage-without-key",
+        "invoke_id": "similar-without-key",
         "type": "tool",
         "action": "invoke_tool",
-        "request": {"provider": "typesearch", "tool": "check_coverage", "credentials": {}, "tool_parameters": {}},
+        "request": {
+            "provider": "typesearch",
+            "tool": "find_similar",
+            "credentials": {},
+            "tool_parameters": {"url": "https://diarioejemplo.example/economia/nota-1"},
+        },
     },
     {
         "invoke_id": "search-invalid-query",
@@ -45,7 +50,7 @@ REQUESTS: list[dict[str, Any]] = [
     },
 ]
 EXPECTED = {
-    "coverage-without-key": "Error (missing_api_key): Missing API key.",
+    "similar-without-key": "Error (missing_api_key): Missing API key.",
     "search-invalid-query": "Error (invalid_request): query needs at least two letters.",
     "validate-empty-key": "Enter your typesearch API key.",
 }

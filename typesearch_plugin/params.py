@@ -221,18 +221,6 @@ def similar_body(p: Mapping[str, Any]) -> dict[str, Any]:
     return body
 
 
-def coverage_domain(p: Mapping[str, Any]) -> str | None:
-    """GET /v1/sources?domain=…: sin dominio, la cobertura por país y por idioma."""
-    domain = _text(p.get("domain"), "domain")
-    if domain is None:
-        return None
-    if len(domain) < 3:
-        raise ParameterError("domain looks too short.")
-    if len(domain) > 300:
-        raise ParameterError("domain: 300 characters at most.")
-    return domain
-
-
 def _domains(value: Any, field: str) -> list[str] | None:
     return _list(
         value,

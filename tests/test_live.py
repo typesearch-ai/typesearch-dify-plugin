@@ -3,7 +3,7 @@
     TYPESEARCH_LIVE=1 TYPESEARCH_API_KEY=ts_live_… uv run pytest tests/test_live.py -v
 
 Gasta muy poco: una búsqueda ``fast`` de 3 resultados y el contenido de una URL; la validación de la clave
-y ``check_coverage`` no cobran. ``TYPESEARCH_BASE_URL`` apunta a otra API (local o de prueba).
+no cobra. ``TYPESEARCH_BASE_URL`` apunta a otra API (local o de prueba).
 """
 
 from __future__ import annotations
@@ -30,15 +30,10 @@ def base_url(monkeypatch: pytest.MonkeyPatch) -> Iterator[None]:
     yield
 
 
-def test_the_key_validates_and_coverage_is_free(registration: PluginRegistration) -> None:
+def test_the_key_validates(registration: PluginRegistration) -> None:
     provider = registration.get_tool_provider_cls("typesearch")
     assert provider is not None
     provider().validate_credentials({"typesearch_api_key": KEY})
-    tool = registration.get_tool_cls("typesearch", "check_coverage")
-    assert tool is not None
-    messages = list(tool.from_credentials({"typesearch_api_key": KEY}).invoke({}))
-    assert texts(messages)[0].startswith("The index has ")
-    assert jsons(messages)[0]["sources"] > 0
 
 
 def test_search_and_contents(registration: PluginRegistration) -> None:

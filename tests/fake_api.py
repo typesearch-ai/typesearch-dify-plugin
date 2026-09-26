@@ -128,6 +128,24 @@ def problem(status: int, code: str, detail: str | None = None, **extra: Any) -> 
     }
 
 
+def usage() -> dict[str, Any]:
+    """GET /v1/usage: lo que usa el plugin sólo para validar la clave (no cobra)."""
+    return {
+        "object": "usage",
+        "key": {"id": "key_fakedify", "name": "Dify"},
+        "limits": {"tokens_per_day": 1000000, "requests_per_minute": 600, "requests_per_second": 10},
+        "today": {"requests": 3, "tokens": 5120, "cost_usd": 0.0033, "remaining_tokens": 994880},
+        "last_30_days": {"requests": 41, "tokens": 70000, "cost_usd": 0.05},
+        "credit": {"balance_usd": 4.95, "plan": "payg", "spent_this_month_usd": 0.05, "monthly_limit_usd": None},
+        # Precios de mentira: los reales están en typesearch.ai/pricing.
+        "pricing": {
+            "currency": "USD",
+            "per_1000_requests": {"ultra": 0, "fast": 0, "normal": 0, "deep": 0, "similar": 0, "similar_deep": 0, "site_search": 0},
+            "per_1000_pages": {"contents": 0, "contents_with_query": 0},
+        },
+    }
+
+
 EMPTY_PAGE = {
     "title": None,
     "description": None,
@@ -228,8 +246,10 @@ class FakeApi:
             return self._search(h, body, "SimilarRequest", "similar")
         if route == "POST /v1/contents":
             return self._contents(h, body)
-        if route == "GET /v1/sources":
-            return self._sources(h, parse_qs(url.query))
+        if route == "GET /v1/usage":
+            # El fixture suma el esquema Usage la próxima vez que se extraiga del OpenAPI (scripts/extract_schemas.py);
+            # hasta entonces este ejemplo se manda sin validar.
+            return self._json(h, 200, usage(), "Usage" if "Usage" in SCHEMAS["components"]["schemas"] else None)
         return self._json(h, 404, problem(404, "not_found", "Not found."), "Problem")
 
     def _invalid(self, h: BaseHTTPRequestHandler, body: Any, schema: str) -> bool:
@@ -286,36 +306,11 @@ class FakeApi:
         }
         self._json(h, 200, out, "ContentsResponse")
 
-    def _sources(self, h: BaseHTTPRequestHandler, q: dict[str, list[str]]) -> None:
-        domain = q.get("domain", [None])[0]
-        if domain is None:
-            out: dict[str, Any] = {
-                "object": "sources",
-                "updated_at": "2026-09-22T14:05:02.000Z",
-                "total": 1234,
-                "articles": 567890,
-                "by_country": [{"country": "AR", "sources": 120}, {"country": None, "sources": 4}],
-                "by_language": [{"language": "es", "sources": 900}, {"language": "en", "sources": 334}],
-            }
-            return self._json(h, 200, out, "Sources")
-        if domain == "diarioejemplo.example":
-            out = {
-                "object": "source",
-                "domain": domain,
-                "covered": True,
-                "name": "Diario Ejemplo",
-                "country": "AR",
-                "languages": ["es"],
-                "articles": 1520,
-                "last_refreshed_at": "2026-09-22T14:05:02.000Z",
-            }
-            return self._json(h, 200, out, "Source")
-        self._json(h, 200, {"object": "source", "domain": domain, "covered": False}, "Source")
-
     # --- Salida --------------------------------------------------------------------------
 
-    def _json(self, h: BaseHTTPRequestHandler, status: int, body: Any, schema: str) -> None:
-        check(schema, body)
+    def _json(self, h: BaseHTTPRequestHandler, status: int, body: Any, schema: str | None) -> None:
+        if schema is not None:
+            check(schema, body)
         data = json.dumps(body).encode("utf-8")
         h.send_response(status)
         h.send_header("Content-Type", "application/problem+json; charset=utf-8" if status >= 400 else "application/json; charset=utf-8")

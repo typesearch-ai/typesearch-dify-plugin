@@ -11,7 +11,7 @@ service:
 
 - your typesearch API key, in the `Authorization` header, to authenticate the request;
 - the tool's inputs: the search query and its filters (mode, number of results, dates, domains, countries
-  and languages), the article URLs you ask about, or a news domain.
+  and languages), or the article URLs you ask about.
 
 When you save the API key in Dify, the plugin makes one free call to the API to check that the key works.
 

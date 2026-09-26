@@ -4,9 +4,9 @@
     uv run python scripts/extract_schemas.py --fetch                # desde la API viva
     uv run python scripts/extract_schemas.py --check path/...       # falla si el fixture quedó viejo
 
-Deja en tests/fixtures/openapi-schemas.json sólo los pedidos y las respuestas de las cuatro rutas que usa
-el plugin (y lo que referencian), sin descripciones: un fixture chico que valida los cuerpos que manda el
-plugin y los ejemplos que responde la API falsa.
+Deja en tests/fixtures/openapi-schemas.json sólo los pedidos y las respuestas de las rutas que usa el
+plugin (las tres herramientas y GET /v1/usage, que valida la clave) y lo que referencian, sin descripciones:
+un fixture chico que valida los cuerpos que manda el plugin y los ejemplos que responde la API falsa.
 """
 
 from __future__ import annotations
@@ -21,7 +21,7 @@ from typing import Any
 
 LIVE = "https://api.typesearch.ai/v1/openapi.json"
 OUT = Path(__file__).resolve().parent.parent / "tests" / "fixtures" / "openapi-schemas.json"
-ROOTS = ["SearchRequest", "SimilarRequest", "ContentsRequest", "SearchResponse", "ContentsResponse", "Sources", "Source", "Problem"]
+ROOTS = ["SearchRequest", "SimilarRequest", "ContentsRequest", "SearchResponse", "ContentsResponse", "Usage", "Problem"]
 REF = re.compile(r"#/components/schemas/([\w.-]+)")
 
 

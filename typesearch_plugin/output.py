@@ -10,7 +10,7 @@ from __future__ import annotations
 import datetime as dt
 import math
 import re
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any
 
@@ -226,55 +226,3 @@ def contents_output(r: Mapping[str, Any]) -> Output:
         blocks.append("\n".join(lines))
     header = f"{ok} of {count(len(results), 'URL', 'URLs')} read · {usd(s.get('cost_usd'))}"
     return Output("\n\n".join([header, *blocks]), s)
-
-
-# --- Cobertura ---------------------------------------------------------------------------------
-
-
-def coverage_output(r: Mapping[str, Any]) -> Output:
-    if r.get("object") == "source":
-        languages = _list(r.get("languages"))
-        s = compact(
-            {
-                "domain": r.get("domain"),
-                "covered": r.get("covered"),
-                "name": r.get("name"),
-                "country": r.get("country"),
-                "languages": languages,
-                "articles": r.get("articles"),
-                "last_refreshed_at": to_minute(r.get("last_refreshed_at")),
-            }
-        )
-        if r.get("covered"):
-            place = " · ".join(x for x in (r.get("country"), "/".join(languages) if languages else None) if x)
-            name = f" ({r['name']})" if r.get("name") else ""
-            articles = f" · {r['articles']:,} articles" if isinstance(r.get("articles"), int) else ""
-            refreshed = f" · last refreshed {s['last_refreshed_at']}" if s.get("last_refreshed_at") else ""
-            text = f"{r.get('domain')} is covered{name}: {place}{articles}{refreshed}."
-        else:
-            text = f"{r.get('domain')} is not covered by the index."
-        return Output(text, s)
-
-    by_country = [{"country": x.get("country") or "international", "sources": x.get("sources")} for x in _list(r.get("by_country"))]
-    by_language = [{"language": x.get("language"), "sources": x.get("sources")} for x in _list(r.get("by_language"))]
-    s = compact(
-        {
-            "sources": r.get("total"),
-            "articles": r.get("articles"),
-            "updated_at": to_minute(r.get("updated_at")),
-            "by_country": by_country,
-            "by_language": by_language,
-        }
-    )
-
-    def listing(xs: Sequence[Mapping[str, Any]], key: str) -> str:
-        return ", ".join(f"{x.get(key)} {x.get('sources')}" for x in xs)
-
-    text = "\n".join(
-        [
-            f"The index has {int(r.get('total') or 0):,} sources and {int(r.get('articles') or 0):,} articles.",
-            f"Sources by country: {listing(by_country, 'country')}.",
-            f"Sources by language: {listing(by_language, 'language')}.",
-        ]
-    )
-    return Output(text, s)
